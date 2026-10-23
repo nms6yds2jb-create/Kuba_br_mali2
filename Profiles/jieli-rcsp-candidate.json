@@ -1,0 +1,14 @@
+{
+  "id": "jieli-rcsp-candidate",
+  "name": "JieLi RCSP (candidato, NÃO verificado)",
+  "verified": false,
+  "notes": "Muitos fones TWS baratos usam chips JieLi, que costumam expor o serviço BLE AE00 (escrita AE01, notificação AE02) e quadros RCSP no formato FE DC BA <flag> <opcode> <tamanho 2 bytes> <seq> <dados> EF. Só o pedido de informações está aqui, porque é uma leitura sem risco. Os códigos de ANC, EQ e toques precisam ser descobertos com o Explorador do app e completados neste arquivo.",
+  "match": { "namePrefixes": [], "serviceUUIDs": ["AE00"] },
+  "transport": { "service": "AE00", "write": "AE01", "notify": "AE02", "writeWithResponse": false },
+  "equalizer": { "minGain": -12, "maxGain": 12, "step": 1, "offsetDb": 0, "encoding": "i8",
+                 "frequencies": [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000] },
+  "commands": {
+    "info": "FE DC BA C0 03 {len:u16be:1} {seq} FF FF FF FF EF"
+  },
+  "events": []
+}

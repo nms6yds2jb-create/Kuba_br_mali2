@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  core:
+    name: KubaCore (swift test, Linux)
+    runs-on: ubuntu-latest
+    container: swift:5.10
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test
+
+  tools-and-firmware:
+    name: Ferramentas Python + firmware C
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s tools/tests -v
+      - run: make -C firmware/kubaopen test
+
+  ios:
+    name: App iOS (build + .ipa sem assinatura)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testes do núcleo no macOS
+        run: swift test
+      - name: Gerar projeto Xcode
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Compilar
+        run: |
+          set -o pipefail
+          xcodebuild -project KubaControl.xcodeproj -scheme KubaControl \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tail -n 200
+      - name: Empacotar .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/KubaControl.app Payload/
+          test -f Payload/KubaControl.app/Profiles/kubaopen.json
+          zip -qry KubaControl-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KubaControl-unsigned-ipa
+          path: KubaControl-unsigned.ipa

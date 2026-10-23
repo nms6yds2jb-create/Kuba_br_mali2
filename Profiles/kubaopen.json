@@ -1,0 +1,56 @@
+{
+  "id": "kubaopen",
+  "name": "KubaOpen (protocolo aberto / firmware próprio / demonstração)",
+  "verified": true,
+  "notes": "Protocolo aberto deste projeto. É o que o modo demonstração usa e o que um firmware próprio deve implementar (ver docs/PROTOCOLO_KUBAOPEN.md e firmware/kubaopen).",
+  "match": {
+    "namePrefixes": ["KubaOpen"],
+    "serviceUUIDs": ["6B756261-4F50-454E-0000-000000000001"]
+  },
+  "transport": {
+    "service": "6B756261-4F50-454E-0000-000000000001",
+    "write": "6B756261-4F50-454E-0000-000000000002",
+    "notify": "6B756261-4F50-454E-0000-000000000003",
+    "writeWithResponse": false
+  },
+  "equalizer": {
+    "frequencies": [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000],
+    "minGain": -12,
+    "maxGain": 12,
+    "step": 0.5,
+    "offsetDb": 0,
+    "encoding": "i8"
+  },
+  "noiseModes": { "off": 0, "anc": 1, "transparency": 2, "wind": 3 },
+  "touchSides": { "left": 0, "right": 1 },
+  "touchGestures": { "singleTap": 0, "doubleTap": 1, "tripleTap": 2, "longPress": 3 },
+  "touchActions": {
+    "none": 0, "playPause": 1, "nextTrack": 2, "previousTrack": 3, "volumeUp": 4,
+    "volumeDown": 5, "voiceAssistant": 6, "cycleNoiseMode": 7, "gameMode": 8, "answerCall": 9
+  },
+  "commands": {
+    "noiseMode": "55 AA {len:u8:1} {seq} 01 {mode} {sum8:2}",
+    "equalizer": "55 AA {len:u8:1} {seq} 02 {count} {gains} {sum8:2}",
+    "touch":     "55 AA {len:u8:1} {seq} 03 {side} {gesture} {action} {sum8:2}",
+    "gameMode":  "55 AA {len:u8:1} {seq} 04 {enabled} {sum8:2}",
+    "battery":   "55 AA {len:u8:1} {seq} 05 {sum8:2}",
+    "info":      "55 AA {len:u8:1} {seq} 06 {sum8:2}"
+  },
+  "events": [
+    { "type": "battery", "match": "55 AA ?? ?? 85",
+      "fields": { "left": { "offset": 5, "mask": 127 }, "right": { "offset": 6, "mask": 127 }, "case": { "offset": 7, "mask": 127 } } },
+    { "type": "noiseMode", "match": "55 AA ?? ?? 81", "fields": { "mode": { "offset": 5 } } },
+    { "type": "firmwareVersion", "match": "55 AA ?? ?? 86", "fields": { "version": { "offset": 5, "length": 3, "format": "dotted" } } },
+    { "type": "ack", "match": "55 AA ?? ?? 7F" }
+  ],
+  "ota": {
+    "chunkSize": 128,
+    "start":  "55 AA {len:u8:1} {seq} 10 {size:u32le} {crc32:u32le} {chunkSize:u16le} {sum8:2}",
+    "chunk":  "55 AA {len:u8:1} {seq} 11 {offset:u32le} {data} {sum8:2}",
+    "finish": "55 AA {len:u8:1} {seq} 12 {crc32:u32le} {sum8:2}",
+    "ackMatch": "55 AA ?? ?? 7F ?? 00",
+    "ackTimeoutMs": 3000,
+    "retries": 3,
+    "minBattery": 50
+  }
+}
