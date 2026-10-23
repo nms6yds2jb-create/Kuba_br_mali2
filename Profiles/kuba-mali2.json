@@ -1,0 +1,12 @@
+{
+  "id": "kuba-mali2",
+  "name": "Kuba Mali 2 (a preencher)",
+  "verified": false,
+  "notes": "Perfil do Mali 2. Ainda não há documentação pública do protocolo nem do chip. Siga docs/DESCOBRIR_PROTOCOLO.md: conecte com o Explorador, anote os serviços/características, teste comandos e preencha 'transport', 'commands' e 'events'. Depois marque 'verified': true.",
+  "match": { "namePrefixes": ["Kuba Mali", "Mali 2", "KUBA"], "serviceUUIDs": [] },
+  "transport": { "service": "FFFF", "write": "FFFF", "notify": "FFFF", "writeWithResponse": false },
+  "equalizer": { "minGain": -12, "maxGain": 12, "step": 1, "offsetDb": 0, "encoding": "i8",
+                 "frequencies": [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000] },
+  "commands": {},
+  "events": []
+}

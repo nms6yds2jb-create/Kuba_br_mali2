@@ -1,0 +1,35 @@
+# Gere o projeto Xcode com:  brew install xcodegen && xcodegen
+name: KubaControl
+options:
+  bundleIdPrefix: br.kubacontrol
+  deploymentTarget:
+    iOS: "16.0"
+packages:
+  KubaCore:
+    path: .
+targets:
+  KubaControl:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Profiles
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: KubaCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: br.kubacontrol.app
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: App/Info.plist
+        CODE_SIGN_STYLE: Automatic
+schemes:
+  KubaControl:
+    build:
+      targets:
+        KubaControl: all
