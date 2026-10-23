@@ -27,7 +27,7 @@ jobs:
 
   ios:
     name: App iOS (build + .ipa sem assinatura)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - name: Testes do núcleo no macOS
