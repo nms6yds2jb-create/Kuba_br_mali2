@@ -79,6 +79,14 @@ public struct CommandProfile: Codable, Equatable, Sendable {
             self.match = match
             self.fields = fields
         }
+
+        /// `fields` pode faltar no JSON (ex.: eventos de confirmação).
+        public init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            type = try c.decode(String.self, forKey: .type)
+            match = try c.decode(String.self, forKey: .match)
+            fields = try c.decodeIfPresent([String: Field].self, forKey: .fields) ?? [:]
+        }
     }
 
     public struct OTASpec: Codable, Equatable, Sendable {
